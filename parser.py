@@ -11,6 +11,7 @@ def main(argv):
 	longueurMots = 13 * [0]
 	motsLettres = 0
 	motsChiffre = 0
+	motsSpecial = 0
 	lettresEtChiffres = 0
 	lettresEtSpecial = 0
 	chiffresEtSpecial = 0
@@ -49,6 +50,8 @@ def main(argv):
 					chiffresEtSpecial += 1
 				if contientSpecial(ligne) and contientChiffre(ligne) and contientLettre(ligne):
 					lettresEtChiffresEtSpecial += 1
+				if contientSpecial(ligne) and not contientChiffre(ligne) and not contientLettre(ligne):
+					motsSpecial += 1
 
 	print("Nombre de mots      : " + str(nombreMots))
 	print("Taille moyenne      : " + str(float(longueurTotale) / nombreMots))
@@ -56,10 +59,12 @@ def main(argv):
 	print("Mot le plus court   : " + str(motLePlusCourt))
 	print("Lettres uniquement  : " + str(motsLettres))
 	print("Chiffres uniquement : " + str(motsChiffre))
+	print("Special uniquement  : " + str(motsSpecial))
 	print("Lettres + chiffres  : " + str(lettresEtChiffres))
 	print("Lettres + special   : " + str(lettresEtSpecial))
 	print("Chiffres + special  : " + str(chiffresEtSpecial))
-	print("Lett + chiff + spec : " + str(motsChiffre))
+	print("Lett + chiff + spec : " + str(lettresEtChiffresEtSpecial))
+	print("Total               : " + str(motsLettres + motsChiffre + motsSpecial + lettresEtChiffres + lettresEtSpecial + chiffresEtSpecial + lettresEtChiffresEtSpecial))
 
 	for i in range(len(longueurMots)):
 		if i != 0:

@@ -109,8 +109,35 @@ def printHTML(longueurTotale,
 	chiffresEtSpecial, 
 	lettresEtChiffresEtSpecial):
 
-	return False
+	html = "<html><head> </head><body>"
+ 	
+	html = html + "<h3> Résultat du parseur </h3><ul>"
+	html = html + "<li> Nombre de mots      : " + str(nombreMots) +"</li>"
+	html = html + "<li> Taille moyenne      : " + str(float(longueurTotale) / nombreMots) + "</li>"
+	html = html + "<li> Mot le plus long    : " + str(motLePlusLong) +"</li>"
+	html = html + "<li> Mot le plus court   : " + str(motLePlusCourt) +"</li>"
+	html = html + "<li> Nombre de mots      : " + str(nombreMots) +"</li>"
+	html = html + "<li> Nombre de mots      : " + str(nombreMots) +"</li>"
+	html = html + "<li> Nombre de mots      : " + str(nombreMots) +"</li>"
+	html = html + "<li> Nombre de mots      : " + str(nombreMots) +"</li>"
+	html = html + "<li> Nombre de mots      : " + str(nombreMots) +"</li>"
+	html = html + "<li> Nombre de mots      : " + str(nombreMots) +"</li>"
+	html = html + "<li> Nombre de mots      : " + str(nombreMots) +"</li>"
 
+
+	print("Lettres uniquement  : " + str(motsLettres))
+	print("Chiffres uniquement : " + str(motsChiffre))
+	print("Special uniquement  : " + str(motsSpecial))
+	print("Lettres + chiffres  : " + str(lettresEtChiffres))
+	print("Lettres + special   : " + str(lettresEtSpecial))
+	print("Chiffres + special  : " + str(chiffresEtSpecial))
+	print("Lett + chiff + spec : " + str(lettresEtChiffresEtSpecial))
+	html = html+"</body></html>"
+	 
+	hs = open("asciiCharHTMLTable.html", 'w')
+	hs.write(html)
+	 
+	print html
 
 if __name__ == "__main__":
     main(sys.argv[1:])

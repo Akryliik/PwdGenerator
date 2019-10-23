@@ -1,7 +1,7 @@
 #!/usr/bin/env python
+# coding: utf-8
 
 import sys
-
 
 def main(argv):
 	longueurTotale = 0
@@ -16,6 +16,8 @@ def main(argv):
 	lettresEtSpecial = 0
 	chiffresEtSpecial = 0
 	lettresEtChiffresEtSpecial = 0
+	uppercases = 0
+	uppercasesFirst = 0
 
 	with open(argv[0], 'r') as fichier:
 		lignes = fichier.read().split('\n')
@@ -38,9 +40,13 @@ def main(argv):
 
 				if ligne.isalpha():
 					motsLettres += 1
-
 				if ligne.isdigit():
 					motsChiffre += 1
+
+				if contientUpper(ligne):
+					uppercases += 1
+				if ligne[0].isupper():
+					uppercasesFirst += 1
 
 				if contientLettre(ligne) and contientChiffre(ligne) and not contientSpecial(ligne):
 					lettresEtChiffres += 1
@@ -53,28 +59,31 @@ def main(argv):
 				if contientSpecial(ligne) and not contientChiffre(ligne) and not contientLettre(ligne):
 					motsSpecial += 1
 
-	print("Nombre de mots      : " + str(nombreMots))
-	print("Taille moyenne      : " + str(float(longueurTotale) / nombreMots))
-	print("Mot le plus long    : " + str(motLePlusLong))
-	print("Mot le plus court   : " + str(motLePlusCourt))
+	print("\tStatistiques de base\n")
+	print("Nombre de mots    : " + str(nombreMots))
+	print("Taille moyenne    : " + str(float(longueurTotale) / nombreMots))
+	print("Mot le plus long  : " + str(motLePlusLong))
+	print("Mot le plus court : " + str(motLePlusCourt))
+	print("\n\tMots contenant\n")
 	print("Lettres uniquement  : " + str(motsLettres))
 	print("Chiffres uniquement : " + str(motsChiffre))
-	print("Special uniquement  : " + str(motsSpecial))
+	print("Spéciaux uniquement : " + str(motsSpecial) + "\n")
 	print("Lettres + chiffres  : " + str(lettresEtChiffres))
 	print("Lettres + special   : " + str(lettresEtSpecial))
 	print("Chiffres + special  : " + str(chiffresEtSpecial))
-	print("Lett + chiff + spec : " + str(lettresEtChiffresEtSpecial))
-	print("Total               : " + str(motsLettres + motsChiffre + motsSpecial + lettresEtChiffres + lettresEtSpecial + chiffresEtSpecial + lettresEtChiffresEtSpecial))
+	print("Lett + chiff + spec : " + str(lettresEtChiffresEtSpecial) + "\n")
+	print("Majuscule(s)        : " + str(uppercases))
+	print("Majuscule au debut  : " + str(uppercasesFirst))
+	print("\n\tMots d'une certaine taille\n")
 
 	for i in range(len(longueurMots)):
 		if i != 0:
 			if i < 10:
-				print("Mots de taille " + str(i) + "    : " + str(longueurMots[i]))
+				print(str(i) + "   : " + str(longueurMots[i]))
 			elif i == 12:
-				print("Mots de taille " + str(i) + "+  : " + str(longueurMots[i]))
+				print(str(i) + "+ : " + str(longueurMots[i]))
 			elif i >= 10:
-				print("Mots de taille " + str(i) + "   : " + str(longueurMots[i]))
-
+				print(str(i) + "  : " + str(longueurMots[i]))
 
 def contientLettre(mot):
 	for i in mot:
@@ -82,13 +91,11 @@ def contientLettre(mot):
 			return True
 	return False
 
-
 def contientChiffre(mot):
 	for i in mot:
 		if i.isdigit():
 			return True
 	return False
-
 
 def contientSpecial(mot):
 	for i in mot:
@@ -96,6 +103,11 @@ def contientSpecial(mot):
 			return True
 	return False
 
+def contientUpper(mot):
+	for i in mot:
+		if i.isalpha() and i.isupper():
+			return True
+	return False
 
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -96,6 +96,21 @@ def contientSpecial(mot):
 			return True
 	return False
 
+def printHTML(longueurTotale, 
+	nombreMots, 
+	motLePlusLong, 
+	motLePlusCourt,
+	longueurMots,
+	motsLettres, 
+	motsChiffre, 
+	motsSpecial, 
+	lettresEtChiffres, 
+	lettresEtSpecial, 
+	chiffresEtSpecial, 
+	lettresEtChiffresEtSpecial):
+
+	return False
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])

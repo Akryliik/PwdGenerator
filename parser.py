@@ -99,28 +99,28 @@ def main(argv):
 
 	print("\n\tMots contenant\n")
 
-	print("Lettres only  : " + str(motsLettres))
-	print("Chiffres only : " + str(motsChiffre))
-	print("Spéciaux only : " + str(motsSpecial) + "\n")
+	print("Lettres only  : " + str(motsLettres) + " (" + str(round(Decimal(motsLettres / float(nombreMots) * 100), 2)) + "%)")
+	print("Chiffres only : " + str(motsChiffre) + " (" + str(round(Decimal(motsChiffre / float(nombreMots) * 100), 2)) + "%)")
+	print("Spéciaux only : " + str(motsSpecial) + " (" + str(round(Decimal(motsSpecial / float(nombreMots) * 100), 2)) + "%)\n")
 
-	print("Lettres + chiffres  : " + str(lettresEtChiffres))
-	print("Lettres + special   : " + str(lettresEtSpecial))
-	print("Chiffres + special  : " + str(chiffresEtSpecial))
-	print("Lett + chiff + spec : " + str(lettresEtChiffresEtSpecial) + "\n")
+	print("Lettres + chiffres  : " + str(lettresEtChiffres) + " (" + str(round(Decimal(lettresEtChiffres / float(nombreMots) * 100), 2)) + "%)")
+	print("Lettres + special   : " + str(lettresEtSpecial) + " (" + str(round(Decimal(lettresEtSpecial / float(nombreMots) * 100), 2)) + "%)")
+	print("Chiffres + special  : " + str(chiffresEtSpecial) + " (" + str(round(Decimal(chiffresEtSpecial / float(nombreMots) * 100), 2)) + "%)")
+	print("Lett + chiff + spec : " + str(lettresEtChiffresEtSpecial) + " (" + str(round(Decimal(lettresEtChiffresEtSpecial / float(nombreMots) * 100), 2)) + "%)\n")
 
-	print("Majuscule(s)        : " + str(uppercases))
-	print("Majuscule au debut  : " + str(uppercasesFirst))
+	print("Majuscule(s)        : " + str(uppercases) + " (" + str(round(Decimal(uppercases / float(nombreMots) * 100), 2)) + "%)")
+	print("Majuscule au debut  : " + str(uppercasesFirst) + " (" + str(round(Decimal(uppercasesFirst / float(nombreMots) * 100), 2)) + "%)")
 
 	print("\n\tMots de taille\n")
 
 	for i in range(len(longueurMots)):
 		if i != 0:
 			if i < 10:
-				print(str(i) + "   : " + str(longueurMots[i]))
+				print(str(i) + "   : " + str(longueurMots[i]) + " (" + str(round(Decimal(longueurMots[i] / float(nombreMots) * 100), 2)) + "%)")
 			elif i == 14:
-				print(str(i) + "+ : " + str(longueurMots[i]))
+				print(str(i) + "+ : " + str(longueurMots[i]) + " (" + str(round(Decimal(longueurMots[i] / float(nombreMots) * 100), 2)) + "%)")
 			elif i >= 10:
-				print(str(i) + "  : " + str(longueurMots[i]))
+				print(str(i) + "  : " + str(longueurMots[i]) + " (" + str(round(Decimal(longueurMots[i] / float(nombreMots) * 100), 2)) + "%)")
 
 	print("\n\tOccurences des lettres\n")
 

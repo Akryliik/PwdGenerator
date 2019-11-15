@@ -147,10 +147,11 @@ def printHTML(longueurTotale,
 	html = html + "<tr> <td> Lettres + special   :  </td><td>"  + str(lettresEtSpecial) +"</td> </tr>\n"
 	html = html + "<tr> <td> Chiffres + special  :  </td><td>"  + str(chiffresEtSpecial) +"</td> </tr>\n"
 	html = html + "<tr> <td> Lett + chiff + spec :  </td><td>"  + str(lettresEtChiffresEtSpecial) +"</td> </tr>\n"
-	html = html + "<tr> <td colspan='2'> Longueur des mots : </td><td>\n"
 	html = html + "</table>\n"
 
+	html = html + "<h1 style=\"text-align:center;\"> Graphiques</h1>\n"
 
+	# ------------  GRAPH LONGUEUR MOT -------------
 	nombre =[]
 	longueur =[]
 	for i in range(len(longueurMots)):	
@@ -167,6 +168,7 @@ def printHTML(longueurTotale,
 
 	html = html + "<img src=\"../graph/tableLongueur"+ os.path.basename(sys.argv[-1]).split('.')[0] +".png\" style=\"display:block;margin: auto;width: 60%;border: 3px solid black;padding: 10px;\">\n"
 
+	# ------------  GRAPH CONTENU DES MOTS -------------
 	nombre = [motsLettres, motsChiffre, motsSpecial, lettresEtChiffres, lettresEtSpecial, chiffresEtSpecial, lettresEtChiffresEtSpecial]
 	type_ = ["Lettres uniquement", "Chiffres uniquement", "Special uniquement", "Lettres + chiffres", "Lettres + special", "Chiffres + special", "Lett + chiff + spec"]
 	index = np.arange(7)
@@ -175,7 +177,7 @@ def printHTML(longueurTotale,
 	plt.xlabel('Type')
 	plt.xticks(index, type_, rotation=15)
 	plt.ylabel('Nombre de mots')
-	plt.title('Repartition des mots en fonction de leurs types.')
+	plt.title('Repartition des mots en fonction de leurs contenu.')
 	fig.savefig('graph/tableType'+ os.path.basename(sys.argv[-1]).split('.')[0] +'.png')
 	html = html + "<img src=\"../graph/tableType"+ os.path.basename(sys.argv[-1]).split('.')[0] +".png\" style=\"display:block;margin: auto;width: 60%;border: 3px solid black;padding: 10px;\">\n"
 	html = html + "</body></html>\n"
@@ -183,7 +185,7 @@ def printHTML(longueurTotale,
 	hs.write(html)
 	
 	print html
-	webbrowser.open('file://' + os.path.realpath("resultat/"+os.path.basename(sys.argv[-1]).split('.')[0]+".html"))
+	#webbrowser.open('file://' + os.path.realpath("resultat/"+os.path.basename(sys.argv[-1]).split('.')[0]+".html"))
 
 
 if __name__ == "__main__":

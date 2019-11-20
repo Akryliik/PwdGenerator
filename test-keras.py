@@ -27,18 +27,22 @@ gen_amount = 100    # How many
 
 def main(argv):
     f = open(argv[0], "r")
-    text = f.read().split('\n')
-    print(text[:5])
+    texttmp = f.read().split('\n')
+    text = []
 
-    print('taille corpus : ', len(text))
+    for mot in texttmp:
+        if len(mot) > 6 and len(mot) < 11:
+            text.append(mot)
+    
+    nbmots = len(text)
+
+    text = text[:nbmots/30]
 
     texte_concat = '\n'.join(text)
 
     chars = sorted(list(set(texte_concat)))
     num_chars = len(chars)
-    print(chars)
 
-    print('nb diff chars :', len(chars))
     char_indices = dict((c, i) for i, c in enumerate(chars))
     indices_char = dict((i, c) for i, c in enumerate(chars))
 
@@ -53,12 +57,6 @@ def main(argv):
         next_chars.append(texte_concat[i + mot_long])
 
     num_sequences = len(sequences)
-
-    print('Number of sequences:', num_sequences)
-    print('First 10 sequences and next chars:')
-    for i in range(10):
-        print('X=[{}]   y=[{}]'.replace('\n', ' ').format(
-            sequences[i], next_chars[i]).replace('\n', ' '))
 
     X = np.zeros((num_sequences, mot_long, num_chars), dtype=np.bool)
     Y = np.zeros((num_sequences, num_chars), dtype=np.bool)

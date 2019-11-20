@@ -6,8 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
-resultat/*.html
-graph/*.png
+resultat/
+*.html
+graph/
+*.png
 
 # Distribution / packaging
 .Python

@@ -173,6 +173,10 @@ def printHTML(longueurTotale,
 	chars,
 	motsContenantChar):
 
+	if not os.path.exists('graph'):
+		os.makedirs('graph')
+	if not os.path.exists('resultat'):
+		os.makedirs('resultat')
 	html = "<html><head><script src='https://unpkg.com/tlx/browser/tlx.js'></script>\n"
 	html = html + "<script src='https://unpkg.com/tlx-chart/browser/tlx-chart.js'></script>\n"
 	html = html + "<style> tr:nth-child(even){background-color: #f2f2f2;} td{border: 1px solid #ddd;padding: 8px;text-align:center;}</style>"

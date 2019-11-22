@@ -13,64 +13,98 @@ import time
 import os
 import keras
 
-step_length = 1    # The step length we take to get our samples from our corpus
-epochs = 10       # Number of times we train on our full data
-batch_size = 32    # Data samples in each training step
-latent_dim = 64    # Size of our LSTM
-dropout_rate = 0.2  # Regularization with dropout
-model_path = os.path.realpath('./modele.h5')  # Location for the model
-load_model = False  # Enable loading model from disk
-store_model = not load_model  # Store model to disk after training
-verbosity = 1      # Print result for each epoch
-gen_amount = 100    # How many
-
+step_length = 1     # Decalage de sequence
+epochs = 1         # Nombre de generations
+batch_size = 32     # Taille de l'echantillon a chaque apprentissage
+latent_dim = 64     # Taille du LSTM
+dropout_rate = 0.2  # Dropout
+model_path = os.path.realpath('./modele.h5')  # Lieu d'enregistrement du modele
+load_model = False  # Est-ce qu'on charge le modele ?
+store_model = not load_model  # Est-ce qu'on sauve le modele ?
+verbosity = 1       # Affichage des generations
+gen_amount = 100    # Nombre de mots a generer
+taux_train = 70
+taux_dev = 10
+taux_test = 20
 
 def main(argv):
+    ########### LECTURE DU FICHIER ###########
     f = open(argv[0], "r")
     texttmp = f.read().split('\n')
     text = []
 
+    ########### SUPPRESSION DES MOTS TROP COURTS/LONGS ###########
     for mot in texttmp:
         if len(mot) > 6 and len(mot) < 11:
             text.append(mot)
     
     nbmots = len(text)
 
-    text = text[:nbmots/30]
+    max_train = nbmots / 100 * taux_train
+    max_dev = nbmots / 100 * (taux_dev + taux_train)
 
-    texte_concat = '\n'.join(text)
+    text_train = text[:max_train]
+    text_dev = text[max_train:max_dev]
+    text_test = text[max_dev:]
 
+    ########### TOUS LES MOTS DE PASSE DANS UN STRING SEPARES PAR '\n' ###########
+    texte_concat = '\n'.join(text_train)
+
+    texte_concat_test = '\n'.join(text_test)
+
+    ########### RECUPERATION DE TOUS LES CARACTERES DIFFERENTS ###########
     chars = sorted(list(set(texte_concat)))
     num_chars = len(chars)
 
+    chars_test = sorted(list(set(texte_concat_test)))
+    num_chars_test = len(chars_test)
+
+    ########### CREATION DES DICOS CHAR -> INDICE ET INVERSEMENT ###########
     char_indices = dict((c, i) for i, c in enumerate(chars))
     indices_char = dict((i, c) for i, c in enumerate(chars))
-
-    mot_long = max([len(mdp) for mdp in text])
-    print('mot le plus long : ', mot_long)
-
+    mot_long = max([len(mdp) for mdp in text_train])
     sequences = []
-    next_chars = []
+    sequences_test = []
 
+    char_indices_test = dict((c, i) for i, c in enumerate(chars_test))
+    indices_char_test = dict((i, c) for i, c in enumerate(chars_test))
+    mot_long_test = max([len(mdp) for mdp in text_test])
+    next_chars = []
+    next_chars_test = []
+
+    ########### STOCKE TOUTES LES SEQUENCES DE MOTS DE PASSE DANS UNE LISTE, EN SE DEPLACANT DE step_length A CHAQUE FOIS ###########
+    ########### STOCKE LE CARACTERE SUIVANT DANS NEXT_CHAR ###########
     for i in range(0, len(texte_concat) - mot_long, step_length):
         sequences.append(texte_concat[i: i + mot_long])
         next_chars.append(texte_concat[i + mot_long])
-
     num_sequences = len(sequences)
 
+    for i in range(0, len(texte_concat_test) - mot_long_test, step_length):
+        sequences_test.append(texte_concat_test[i: i + mot_long_test])
+        next_chars_test.append(texte_concat_test[i + mot_long_test])
+    num_sequences_test = len(sequences_test)
+
+    ########### CREE DES TABLEAUX REMPLIS DE ZEROS ###########
+    ########### X : CODAGE DES CARACTERES DE CHAQUE SEQUENCE EN BOOL ###########
+    ########### Y : CODAGE DES NEXT_CHARS EN BOOL ###########
     X = np.zeros((num_sequences, mot_long, num_chars), dtype=np.bool)
     Y = np.zeros((num_sequences, num_chars), dtype=np.bool)
-
     for i, sequence in enumerate(sequences):
         for j, char in enumerate(sequence):
             X[i, j, char_indices[char]] = 1
         Y[i, char_indices[next_chars[i]]] = 1
 
-    print('X shape: {}'.format(X.shape))
-    print('Y shape: {}'.format(Y.shape))
+    X_test = np.zeros((num_sequences_test, mot_long_test, num_chars_test), dtype=np.bool)
+    Y_test = np.zeros((num_sequences_test, num_chars_test), dtype=np.bool)
+    for i, sequence in enumerate(sequences_test):
+        for j, char in enumerate(sequence):
+            X_test[i, j, char_indices_test[char]] = 1
+        Y_test[i, char_indices_test[next_chars_test[i]]] = 1
 
+    ########### DEBUT KERAS ###########
     model = Sequential()
 
+    ########### CHARGEMENT DU MODELE ###########
     if load_model:
         model = keras.models.load_model(model_path)
     else:
@@ -87,6 +121,10 @@ def main(argv):
         end = time.time()
         print('Finished training - time elapsed:', (end - start)/60, 'min')
 
+        score = model.evaluate(X_test, Y_test, verbose=0)
+        prin("Test score : ", score[0])
+        prin("Test accuracy : ", score[1])
+
     if store_model:
         print('Storing model at:', model_path)
         model.save(model_path)
@@ -99,15 +137,14 @@ def main(argv):
     print('{} new names are being generated'.format(gen_amount))
 
     while len(new_names) < gen_amount:
-        # Vectorize sequence for prediction
         x = np.zeros((1, mot_long, num_chars))
         for i, char in enumerate(sequence):
             x[0, i, char_indices[char]] = 1
 
-        # Sample next char from predicted probabilities
         probs = model.predict(x, verbose=0)[0]
         probs /= probs.sum()
-        next_idx = np.random.choice(len(probs), p=probs)   
+        next_idx = np.random.choice(len(probs), p=probs)
+
         next_char = indices_char[next_idx]
         sequence = sequence[1:] + next_char
 

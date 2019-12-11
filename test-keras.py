@@ -84,73 +84,70 @@ def main(argv):
     Y_dev = Y[max_train:max_dev]
     Y_test = Y[max_dev:]
 
-    print(X_dev)
-    print(Y_dev)
-
     ########### DEBUT KERAS ###########
-    # model = Sequential()
+    model = Sequential()
 
-    # ########### CHARGEMENT DU MODELE ###########
-    # if load_model:
-    #     model = keras.models.load_model(model_path)
-    # else:
-    #     model.add(LSTM(latent_dim, input_shape=(mot_long, num_chars), recurrent_dropout=dropout_rate))
-    #     model.add(Dense(units=num_chars, activation='softmax'))
+    ########### CHARGEMENT DU MODELE ###########
+    if load_model:
+        model = keras.models.load_model(model_path)
+    else:
+        model.add(LSTM(latent_dim, input_shape=(mot_long, num_chars), recurrent_dropout=dropout_rate))
+        model.add(Dense(units=num_chars, activation='softmax'))
 
-    #     optimizer = RMSprop(lr=0.01)
-    #     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=["accuracy"])
+        optimizer = RMSprop(lr=0.01)
+        model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=["accuracy"])
 
-    #     model.summary()
-    #     start = time.time()
-    #     print('Start training for {} epochs'.format(epochs))
-    #     history = model.fit(X_train, Y_train, epochs=epochs, batch_size=batch_size, verbose=verbosity, validation_data=(X_dev, Y_dev))
-    #     end = time.time()
-    #     print('Finished training - time elapsed:', (end - start)/60, 'min')
+        model.summary()
+        start = time.time()
+        print('Start training for {} epochs'.format(epochs))
+        history = model.fit(X_train, Y_train, epochs=epochs, batch_size=batch_size, verbose=verbosity, validation_data=(X_dev, Y_dev))
+        end = time.time()
+        print('Finished training - time elapsed:', (end - start)/60, 'min')
 
-    #     score = model.evaluate(X_test, Y_test, verbose=0)
-    #     print("Test score : ", score)
-    #     #print("Test accuracy : ", score[1])
+        score = model.evaluate(X_test, Y_test, verbose=0)
+        print("Test score : ", score)
+        #print("Test accuracy : ", score[1])
 
-    # if store_model:
-    #     print('Storing model at:', model_path)
-    #     model.save(model_path)
+    if store_model:
+        print('Storing model at:', model_path)
+        model.save(model_path)
     
-    # # Start sequence generation from end of the input sequence
-    # sequence = texte_concat[-(mot_long - 1):] + '\n'
+    # Start sequence generation from end of the input sequence
+    sequence = texte_concat[-(mot_long - 1):] + '\n'
 
-    # new_names = []
+    new_names = []
 
-    # print('{} new names are being generated'.format(gen_amount))
+    print('{} new names are being generated'.format(gen_amount))
 
-    # while len(new_names) < gen_amount:
-    #     x = np.zeros((1, mot_long, num_chars))
-    #     for i, char in enumerate(sequence):
-    #         x[0, i, char_indices[char]] = 1
+    while len(new_names) < gen_amount:
+        x = np.zeros((1, mot_long, num_chars))
+        for i, char in enumerate(sequence):
+            x[0, i, char_indices[char]] = 1
 
-    #     probs = model.predict(x, verbose=0)[0]
-    #     probs /= probs.sum()
-    #     next_idx = np.random.choice(len(probs), p=probs)
+        probs = model.predict(x, verbose=0)[0]
+        probs /= probs.sum()
+        next_idx = np.random.choice(len(probs), p=probs)
 
-    #     next_char = indices_char[next_idx]
-    #     sequence = sequence[1:] + next_char
+        next_char = indices_char[next_idx]
+        sequence = sequence[1:] + next_char
 
-    #     # New line means we have a new name
-    #     if next_char == '\n':
-    #         gen_name = [name for name in sequence.split('\n')][1]
+        # New line means we have a new name
+        if next_char == '\n':
+            gen_name = [name for name in sequence.split('\n')][1]
 
-    #         # Discard all names that are too short
-    #         if len(gen_name) > 2:
-    #             # Only allow new and unique names
-    #             if gen_name not in new_names:
-    #                 new_names.append(gen_name)
+            # Discard all names that are too short
+            if len(gen_name) > 2:
+                # Only allow new and unique names
+                if gen_name not in new_names:
+                    new_names.append(gen_name)
 
-    #         if 0 == (len(new_names) % (gen_amount/ 10)):
-    #             print('Generated {}'.format(len(new_names)))
+            if 0 == (len(new_names) % (gen_amount/ 10)):
+                print('Generated {}'.format(len(new_names)))
 
-    # print_first_n = min(10, gen_amount)
-    # print('First {} generated names:'.format(print_first_n))
-    # for name in new_names[:print_first_n]:
-    #     print(name)
+    print_first_n = min(10, gen_amount)
+    print('First {} generated names:'.format(print_first_n))
+    for name in new_names[:print_first_n]:
+        print(name)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -14,8 +14,8 @@ import os
 import keras
 
 step_length = 1     # Decalage de sequence
-epochs = 10         # Nombre de generations
-batch_size = 32     # Taille de l'echantillon a chaque apprentissage
+epochs = 1         # Nombre de generations
+batch_size = 128     # Taille de l'echantillon a chaque apprentissage
 latent_dim = 64     # Taille du LSTM
 dropout_rate = 0.2  # Dropout
 model_path = os.path.realpath('./modele.h5')  # Lieu d'enregistrement du modele
@@ -35,7 +35,7 @@ def main(argv):
 
     ########### SUPPRESSION DES MOTS TROP COURTS/LONGS ###########
     for mot in texttmp:
-        if len(mot) > 6 and len(mot) < 11:
+        if len(mot) > 4 and len(mot) < 12:
             text.append(mot)
 
     ########### TOUS LES MOTS DE PASSE DANS UN STRING SEPARES PAR '\n' ###########
@@ -62,8 +62,8 @@ def main(argv):
     ########### CREE DES TABLEAUX REMPLIS DE ZEROS ###########
     ########### X : CODAGE DES CARACTERES DE CHAQUE SEQUENCE EN BOOL ###########
     ########### Y : CODAGE DES NEXT_CHARS EN BOOL ###########
-    X = np.zeros((num_sequences, mot_long, num_chars), dtype=np.bool)
-    Y = np.zeros((num_sequences, num_chars), dtype=np.bool)
+    X = np.zeros((num_sequences, mot_long, num_chars), dtype = np.bool)
+    Y = np.zeros((num_sequences, num_chars), dtype = np.bool)
     for i, sequence in enumerate(sequences):
         for j, char in enumerate(sequence):
             X[i, j, char_indices[char]] = 1
@@ -91,25 +91,25 @@ def main(argv):
     if load_model:
         model = keras.models.load_model(model_path)
     else:
-        model.add(LSTM(latent_dim, input_shape=(mot_long, num_chars), recurrent_dropout=dropout_rate))
-        model.add(Dense(units=num_chars, activation='softmax'))
+        model.add(LSTM(latent_dim, input_shape = (mot_long, num_chars), recurrent_dropout = dropout_rate))
+        model.add(Dense(units = num_chars, activation = "softmax"))
 
-        optimizer = RMSprop(lr=0.01)
-        model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=["accuracy"])
+        optimizer = RMSprop(lr = 0.01)
+        model.compile(loss = "categorical_crossentropy", optimizer = optimizer, metrics = ["accuracy"])
 
         model.summary()
         start = time.time()
-        print('Start training for {} epochs'.format(epochs))
-        history = model.fit(X_train, Y_train, epochs=epochs, batch_size=batch_size, verbose=verbosity, validation_data=(X_dev, Y_dev))
+        print("On s'entraine sur " + str(epochs) + " generations :")
+        history = model.fit(X_train, Y_train, epochs = epochs, batch_size = batch_size, verbose = verbosity, validation_data = (X_dev, Y_dev))
         end = time.time()
-        print('Finished training - time elapsed:', (end - start)/60, 'min')
+        print("Entrainement termine, duree : " + str((end - start) / 60) + "min")
 
-        score = model.evaluate(X_test, Y_test, verbose=0)
-        print("Test score : ", score)
-        #print("Test accuracy : ", score[1])
+        score = model.evaluate(X_test, Y_test, verbose = 0)
+        print("Test score : ", score[0])
+        print("Test accuracy : ", score[1])
 
     if store_model:
-        print('Storing model at:', model_path)
+        print("On sauvegarde le modele (" + model_path + ")")
         model.save(model_path)
     
     # Start sequence generation from end of the input sequence
@@ -117,16 +117,16 @@ def main(argv):
 
     new_names = []
 
-    print('{} new names are being generated'.format(gen_amount))
+    print("On genere " + str(gen_amount) + " nouveaux mots de passe")
 
     while len(new_names) < gen_amount:
         x = np.zeros((1, mot_long, num_chars))
         for i, char in enumerate(sequence):
             x[0, i, char_indices[char]] = 1
 
-        probs = model.predict(x, verbose=0)[0]
+        probs = model.predict(x, verbose = 0)[0]
         probs /= probs.sum()
-        next_idx = np.random.choice(len(probs), p=probs)
+        next_idx = np.random.choice(len(probs), p = probs)
 
         next_char = indices_char[next_idx]
         sequence = sequence[1:] + next_char
@@ -135,11 +135,9 @@ def main(argv):
         if next_char == '\n':
             gen_name = [name for name in sequence.split('\n')][1]
 
-            # Discard all names that are too short
-            if len(gen_name) > 2:
-                # Only allow new and unique names
-                if gen_name not in new_names:
-                    new_names.append(gen_name)
+            # Only allow new and unique names
+            if gen_name not in new_names:
+                new_names.append(gen_name)
 
             if 0 == (len(new_names) % (gen_amount/ 10)):
                 print('Generated {}'.format(len(new_names)))

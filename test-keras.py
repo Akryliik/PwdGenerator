@@ -1,10 +1,9 @@
 from __future__ import print_function
-from keras.callbacks import LambdaCallback
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.callbacks import TensorBoard
-from keras.layers import LSTM
-from keras.optimizers import RMSprop, Adam
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.python.keras.layers import LSTM, CuDNNLSTM
+from tensorflow.keras.optimizers import RMSprop, Adam
 from keras.utils.data_utils import get_file
 from time import time
 import numpy as np
@@ -24,7 +23,7 @@ model_path = os.path.realpath('./models/model2_11-12.h5')  # Lieu d'enregistreme
 load_model = False  # Est-ce qu'on charge le modele ?
 store_model = not load_model  # Est-ce qu'on sauve le modele ?
 verbosity = 1       # Affichage des generations
-gen_amount = 10000    # Nombre de mots a generer
+gen_amount = 1000    # Nombre de mots a generer
 taux_train = 70
 taux_dev = 10
 taux_test = 20
@@ -97,7 +96,7 @@ def main(argv):
         model = keras.models.load_model(model_path)
     else:
         
-        model.add(LSTM(latent_dim, input_shape=(mot_long, num_chars), recurrent_dropout=dropout_rate))
+        model.add(CuDNNLSTM(latent_dim, input_shape=(mot_long, num_chars)))
         model.add(Dense(num_chars, activation='softmax'))
         optimizer = RMSprop(lr=0.01)
         #optimizer = Adam(lr=0.01) 

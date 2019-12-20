@@ -15,7 +15,7 @@ import os
 import keras
 
 step_length = 1     # Decalage de sequence
-epochs = 1         # Nombre de generations
+epochs = 5         # Nombre de generations
 batch_size = 128     # Taille de l'echantillon a chaque apprentissage
 latent_dim = 64     # Taille du LSTM
 dropout_rate = 0.2  # Dropout
@@ -59,7 +59,11 @@ def main(argv):
     ########### STOCKE TOUTES LES SEQUENCES DE MOTS DE PASSE DANS UNE LISTE, EN SE DEPLACANT DE step_length A CHAQUE FOIS ###########
     ########### STOCKE LE CARACTERE SUIVANT DANS NEXT_CHAR ###########
     for i in range(0, len(texte_concat) - mot_long, step_length):
-        sequences.append(texte_concat[i: i + mot_long])
+        strtmp = texte_concat[i: i + mot_long]
+        index = strtmp.rfind('\n')
+        s = ' ' * (index + 1)
+        strtmp = strtmp.replace(strtmp[0:index + 1], s)
+        sequences.append(strtmp)
         next_chars.append(texte_concat[i + mot_long])
     num_sequences = len(sequences)
 
@@ -132,13 +136,13 @@ def main(argv):
         model.save(model_path)
     
     # Start sequence generation from end of the input sequence
-    sequence = texte_concat[-(mot_long - 1):] + '\n'
 
     new_pwd = []
 
     print("On genere " + str(gen_amount) + " nouveaux mots de passe")
 
     while len(new_pwd) < gen_amount:
+        sequence = ' ' * mot_long
         x = np.zeros((1, mot_long, num_chars))
         for i, char in enumerate(sequence):
             x[0, i, char_indices[char]] = 1
